@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çizgi Roman & Manga Kütüphanem</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #fff; padding: 15px; }
+
+        /* Sağ Üst Profil ve Bağış */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1e1e1e; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .logo { font-size: 20px; font-weight: bold; color: #00d2d3; cursor: pointer; }
+        .user-area { display: flex; align-items: center; gap: 12px; }
+        .donate-btn { background: #ff4757; color: white; padding: 8px 14px; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; }
+        .profile-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #00d2d3; object-fit: cover; }
+
+        /* Kategori Butonları (Orijinal - Fan Hikayeleri) */
+        .category-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: #1e1e1e; color: #aaa; border: 1px solid #333; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; }
+        .tab-btn.active { background: #00d2d3; color: #121212; border-color: #00d2d3; }
+
+        /* Çizgi Roman Kartları Izgarası */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .comic-card { background: #1e1e1e; border-radius: 8px; overflow: hidden; cursor: pointer; border: 1px solid #2a2a2a; transition: transform 0.2s; }
+        .comic-card:hover { transform: translateY(-5px); border-color: #00d2d3; }
+        .comic-card img { width: 100%; height: 190px; object-fit: cover; }
+        .comic-card .title { padding: 10px; font-size: 14px; font-weight: bold; text-align: center; color: #fff; }
+
+        /* Bölüm/Kitap Listesi Görünümü */
+        .chapter-view { display: none; }
+        .back-btn { background: #333; color: #fff; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; font-size: 14px; }
+        .chapter-list { display: flex; flex-direction: column; gap: 10px; }
+        .chapter-item { background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .chapter-item:hover { border-color: #00d2d3; color: #00d2d3; }
+
+        /* Sayfa Çevirmeli Okuyucu (Reader Modal) */
+        .reader-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; justify-content: space-between; align-items: center; }
+        .reader-header { width: 100%; padding: 10px 15px; background: rgba(20,20,20,0.9); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .reader-title { font-size: 14px; color: #ccc; }
+        .close-reader { background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .reader-body { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; overflow: hidden; }
+        .reader-body img { max-width: 100%; max-height: 80vh; object-fit: contain; }
+
+        /* Sayfa Çevirme Okları */
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; font-size: 24px; padding: 15px 10px; cursor: pointer; border-radius: 5px; }
+        .nav-arrow.left { left: 10px; }
+        .nav-arrow.right { right: 10px; }
+
+        .reader-footer { width: 100%; padding: 10px; background: rgba(20,20,20,0.9); text-align: center; font-size: 14px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <!-- Üst Kısım: Profil ve Bağış -->
+    <header>
+        <div class="logo" onclick="showMainView()">🎨 Kütüphanem</div>
+        <div class="user-area">
+            <!-- Kendi Bağış Linkin (Ko-fi, Papara, Patreon vb.) -->
+            <a href="https://ko-fi.com/" target="_blank" class="donate-btn">❤️ Bağış</a>
+            <!-- Kendi Profil Resmin -->
+            <img src="profil.jpg" alt="Profil" class="profile-img">
+        </div>
+    </header>
+
+    <!-- Ana Sayfa Görünümü -->
+    <div id="main-view">
+        <!-- İki Taraf/Sekme: Orijinal vs Fan -->
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="switchTab('original')">✨ Orijinal Çizgi Romanlar</button>
+            <button class="tab-btn" onclick="switchTab('fan')">🔥 Fan Çizgi Romanlar</button>
+        </div>
+
+        <!-- 1. TARAF: Orijinal Çizgi Romanlar Listesi -->
+        <div id="original-list" class="grid">
+            <div class="comic-card" onclick="openComic('Orijinal Hikaye 1', ['Klasör/bolum1_sayfa1.jpg', 'Klasör/bolum1_sayfa2.jpg', 'Klasör/bolum1_sayfa3.jpg'])">
+                <img src="kapak1.jpg" alt="Kapak">
+                <div class="title">Orijinal Hikaye 1</div>
+            </div>
+            <div class="comic-card" onclick="openComic('Orijinal Hikaye 2', ['Klasör2/sayfa1.jpg', 'Klasör2/sayfa2.jpg'])">
+                <img src="kapak2.jpg" alt="Kapak">
+                <div class="title">Orijinal Hikaye 2</div>
+            </div>
+        </div>
+
+        <!-- 2. TARAF: Fan Çizgi Romanlar Listesi -->
+        <div id="fan-list" class="grid" style="display: none;">
+            <div class="comic-card" onclick="openComic('Fan Manga 1', ['fan1/01.jpg', 'fan1/02.jpg', 'fan1/03.jpg'])">
+                <img src="fan_kapak1.jpg" alt="Kapak">
+                <div class="title">Fan Manga 1</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sayfa Çevirmeli Okuyucu (Ekrana Tıklayınca/Oklarla Çevrilir) -->
+    <div id="reader-modal" class="reader-modal">
+        <div class="reader-header">
+            <span id="reader-comic-title" class="reader-title">Çizgi Roman Adı</span>
+            <button class="close-reader" onclick="closeReader()">X Kapat</button>
+        </div>
+
+        <div class="reader-body">
+            <button class="nav-arrow left" onclick="prevPage()">◀</button>
+            <img id="reader-img" src="" alt="Sayfa">
+            <button class="nav-arrow right" onclick="nextPage()">▶</button>
+        </div>
+
+        <div class="reader-footer">
+            Sayfa: <span id="page-counter">1 / 1</span>
+        </div>
+    </div>
+
+    <script>
+        let currentPages = [];
+        let currentIndex = 0;
+
+        // Orijinal - Fan Sekme Değiştirme
+        function switchTab(type) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+
+            if (type === 'original') {
+                tabs[0].classList.add('active');
+                document.getElementById('original-list').style.display = 'grid';
+                document.getElementById('fan-list').style.display = 'none';
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('original-list').style.display = 'none';
+                document.getElementById('fan-list').style.display = 'grid';
+            }
+        }
+
+        // Çizgi Romana Tıklayınca Doğrudan Okuma Ekranını Açma
+        function openComic(title, pageArray) {
+            currentPages = pageArray;
+            currentIndex = 0;
+            document.getElementById('reader-comic-title').innerText = title;
+            updateReader();
+            document.getElementById('reader-modal').style.display = 'flex';
+        }
+
+        function closeReader() {
+            document.getElementById('reader-modal').style.display = 'none';
+        }
+
+        function updateReader() {
+            document.getElementById('reader-img').src = currentPages[currentIndex];
+            document.getElementById('page-counter').innerText = (currentIndex + 1) + " / " + currentPages.length;
+        }
+
+        // Sayfa Geçişleri (Oklar ile)
+        function nextPage() {
+            if (currentIndex < currentPages.length - 1) {
+                currentIndex++;
+                updateReader();
+            }
+        }
+
+        function prevPage() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateReader();
+            }
+        }
+
+        // Klavye Yön Tuşları ile Sayfa Çevirme (Masaüstü/Klavye Kullanıcıları İçin)
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('reader-modal').style.display === 'flex') {
+                if (e.key === 'ArrowRight') nextPage();
+                if (e.key === 'ArrowLeft') prevPage();
+                if (e.key === 'Escape') closeReader();
+            }
+        });
+    </script>
+</body>
+</html>
