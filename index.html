@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webtoon & Çizgi Roman Portalı</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background-color: #121317; color: #fff; padding-bottom: 30px; }
+
+        /* Üst Header */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1c23; border-bottom: 1px solid #2a2d37; position: sticky; top: 0; z-index: 10; }
+        .logo { font-size: 18px; font-weight: bold; color: #a55eea; }
+        .donate-btn { background: #ff4757; color: white; padding: 6px 12px; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; }
+
+        .container { padding: 15px; max-width: 600px; margin: 0 auto; }
+
+        /* Çizgi Roman Kartları */
+        .comic-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
+        .comic-card { background: #1a1c23; border-radius: 8px; overflow: hidden; border: 1px solid #2a2d37; cursor: pointer; }
+        .comic-card img { width: 100%; height: 200px; object-fit: cover; }
+        .comic-info { padding: 10px; font-size: 13px; font-weight: bold; text-align: center; }
+
+        /* Dikey Okuma Ekranı (Webtoon Modal) */
+        .webtoon-reader { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; flex-direction: column; }
+        .reader-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #1a1c23; position: sticky; top: 0; z-index: 1001; }
+        .close-btn { background: #ff5252; color: #fff; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        /* Resimlerin Dikey Peş Peşe Akması */
+        .webtoon-images { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .webtoon-images img { width: 100%; max-width: 700px; height: auto; display: block; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">⚡ WEBTOON</div>
+        <a href="https://ko-fi.com/" target="_blank" class="donate-btn">❤️ Bağış</a>
+    </header>
+
+    <div class="container">
+        <h3>Çizgi Romanlarım</h3>
+        <div class="comic-grid">
+            
+            <!-- ÖRNEK ÇİZGİ ROMAN KARTI -->
+            <div class="comic-card" onclick="openWebtoon([
+                'bolum1_01.jpg',
+                'bolum1_02.jpg',
+                'bolum1_03.jpg'
+            ])">
+                <img src="kapak.jpg" alt="Kapak">
+                <div class="comic-info">1. Bölüm</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DIKEY OKUYUCU MODAL -->
+    <div id="webtoonModal" class="webtoon-reader">
+        <div class="reader-header">
+            <span>Dikey Okuma Modu</span>
+            <button class="close-btn" onclick="closeWebtoon()">X Kapat</button>
+        </div>
+        <div id="imageContainer" class="webtoon-images">
+            <!-- Resimler JS ile dikey olarak buraya yüklenecek -->
+        </div>
+    </div>
+
+    <script>
+        function openWebtoon(pages) {
+            const container = document.getElementById('imageContainer');
+            container.innerHTML = ''; // Temizle
+            
+            // Bütün sayfaları dikey olarak peş peşe ekle
+            pages.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                container.appendChild(img);
+            });
+
+            document.getElementById('webtoonModal').style.display = 'flex';
+        }
+
+        function closeWebtoon() {
+            document.getElementById('webtoonModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
